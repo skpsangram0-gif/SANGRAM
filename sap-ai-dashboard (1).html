@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sangram Patra's SAP AI Dashboard - AI-Powered Expert Advisor with comprehensive analysis and solutions for SAP issues">
+    <meta name="keywords" content="SAP, Sangram Patra, AI Dashboard, SD, MM, FICO, PP, Analysis, Solutions, SAP Notes">
+    <meta name="author" content="Sangram Patra">
+    <title>Sangram Patra's SAP AI Dashboard - AI-Powered Expert Advisor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=IBM+Plex+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Mono', monospace;
+            background: #0a0e27;
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .background-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00ffff, #00ff88, #ffff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .header .subtitle {
+            font-size: 1rem;
+            color: #00ffff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            opacity: 0.7;
+        }
+
+        .main-search {
+            background: rgba(15, 20, 45, 0.8);
+            border: 2px solid #00ffff;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1s ease-out;
+        }
+
+        .search-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .search-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            color: #00ffff;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
+        }
+
+        .module-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .module-btn {
+            padding: 12px;
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #00ffff;
+            cursor: pointer;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-btn:hover {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .module-btn.active {
+            background: #00ffff;
+            color: #0a0e27;
+            border-color: #00ffff;
+            font-weight: 600;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .search-box textarea {
+            flex: 1;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #e0e0e0;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 80px;
+            border-radius: 8px;
+        }
+
+        .search-box textarea:focus {
+            outline: none;
+            border-color: #00ffff;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        .search-box textarea::placeholder {
+            color: rgba(224, 224, 224, 0.4);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #00ffff, #00ff88);
+            color: #0a0e27;
+            border: none;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 25px rgba(0, 255, 255, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: rgba(0, 255, 255, 0.1);
+            color: #00ffff;
+            border: 1px solid #00ffff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 255, 255, 0.2);
+        }
+
+        .quick-queries {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .quick-query {
+            padding: 8px 15px;
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid rgba(255, 255, 0, 0.3);
+            color: #ffff00;
+            cursor: pointer;
+            font-size: 0.8rem;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .quick-query:hover {
+            background: rgba(255, 255, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        .results-container {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .results-container.active {
+            display: block;
+        }
+
+        .analysis-card {
+            background: rgba(15, 20, 45, 0.9);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 25px rgba(0, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analysis-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #00ffff, #00ff88, #ffff00);
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            color: #00ffff;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .section-title::before {
+            content: '▶';
+            color: #00ff88;
+        }
+
+        .content-block {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 3px solid #00ffff;
+            line-height: 1.8;
+        }
+
+        .content-block h4 {
+            color: #00ff88;
+            margin-bottom: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1rem;
+        }
+
+        .content-block ul {
+            margin-left: 20px;
+        }
+
+        .content-block li {
+            margin-bottom: 8px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 5px 12px;
+            background: rgba(0, 255, 255, 0.2);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+            color: #00ffff;
+            font-size: 0.8rem;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .tag.critical {
+            background: rgba(255, 0, 100, 0.2);
+            border-color: rgba(255, 0, 100, 0.4);
+            color: #ff0064;
+        }
+
+        .tag.note {
+            background: rgba(255, 255, 0, 0.2);
+            border-color: rgba(255, 255, 0, 0.4);
+            color: #ffff00;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            font-size: 1.2rem;
+            color: #00ffff;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        .note-number {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 15px;
+            background: linear-gradient(135deg, rgba(255, 255, 0, 0.2), rgba(255, 200, 0, 0.2));
+            border: 1px solid #ffff00;
+            color: #ffff00;
+            font-weight: 600;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            margin-right: 10px;
+        }
+
+        .gap-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .gap-indicator.high {
+            background: #ff0064;
+            box-shadow: 0 0 10px #ff0064;
+        }
+
+        .gap-indicator.medium {
+            background: #ffaa00;
+            box-shadow: 0 0 10px #ffaa00;
+        }
+
+        .gap-indicator.low {
+            background: #00ff88;
+            box-shadow: 0 0 10px #00ff88;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+            border-left: 2px solid rgba(0, 255, 255, 0.3);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+            padding-left: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -36px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background: #00ffff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ffff;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            margin-top: 60px;
+            border-top: 1px solid rgba(0, 255, 255, 0.2);
+            color: rgba(224, 224, 224, 0.5);
+            font-size: 0.9rem;
+        }
+
+        .footer a {
+            color: #00ffff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .module-selector {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-grid"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>SANGRAM PATRA'S SAP AI DASHBOARD</h1>
+            <div class="subtitle">AI-Powered Expert Advisor</div>
+        </div>
+
+        <div class="main-search">
+            <div class="search-header">
+                <h2>▶ Select SAP Module</h2>
+            </div>
+
+            <div class="module-selector">
+                <button class="module-btn" data-module="SD">SD - Sales</button>
+                <button class="module-btn" data-module="MM">MM - Materials</button>
+                <button class="module-btn" data-module="FICO">FICO - Finance</button>
+                <button class="module-btn" data-module="PP">PP - Production</button>
+                <button class="module-btn" data-module="QM">QM - Quality</button>
+                <button class="module-btn" data-module="PM">PM - Plant Maint</button>
+                <button class="module-btn" data-module="HR">HR - Human Res</button>
+                <button class="module-btn" data-module="WM">WM - Warehouse</button>
+                <button class="module-btn" data-module="ABAP">ABAP - Development</button>
+                <button class="module-btn" data-module="BW">BW - Analytics</button>
+                <button class="module-btn" data-module="CRM">CRM - Customer</button>
+                <button class="module-btn active" data-module="ALL">ALL Modules</button>
+            </div>
+
+            <div class="search-box">
+                <textarea id="queryInput" placeholder="Describe your SAP issue, question, or requirement in detail...
+
+Example: 
+- Price not updating in billing document after changing conditions
+- Stock discrepancy between MM and WM modules
+- Purchase order approval workflow issue
+- Custom ABAP report performance optimization"></textarea>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn" onclick="analyzeIssue()">🔍 Analyze Issue</button>
+                <button class="btn btn-secondary" onclick="clearResults()">Clear</button>
+            </div>
+
+            <div class="quick-queries">
+                <div class="quick-query" onclick="setQuery('Pricing not updating from sales order to invoice in SD module')">Pricing Issue - SD</div>
+                <div class="quick-query" onclick="setQuery('Stock discrepancy between MM and WM, how to reconcile')">Stock Reconciliation</div>
+                <div class="quick-query" onclick="setQuery('Purchase order approval workflow not working in MM')">PO Approval Workflow</div>
+                <div class="quick-query" onclick="setQuery('How to configure pricing procedure for new sales org')">Pricing Configuration</div>
+                <div class="quick-query" onclick="setQuery('GL account posting error in FICO integration')">FICO Posting Error</div>
+                <div class="quick-query" onclick="setQuery('ABAP performance optimization for custom Z-table query')">ABAP Performance</div>
+            </div>
+        </div>
+
+        <div id="resultsContainer" class="results-container">
+            <!-- Results will be dynamically inserted here -->
+        </div>
+
+        <div class="footer">
+            <p><strong>Sangram Patra's SAP AI Dashboard</strong> - AI-Powered Expert Advisor</p>
+            <p style="margin-top: 10px;">
+                Open Source Project | 
+                <a href="https://github.com/sangrampatra/sap-ai-dashboard" target="_blank">GitHub</a> | 
+                <a href="https://github.com/sangrampatra/sap-ai-dashboard/issues" target="_blank">Report Issue</a>
+            </p>
+            <p style="margin-top: 10px; font-size: 0.8rem;">
+                Not affiliated with SAP SE. This is an independent community tool by Sangram Patra.<br>
+                Always test solutions in development environment first.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let selectedModule = 'ALL';
+
+        // Module selection
+        document.querySelectorAll('.module-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.module-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedModule = this.dataset.module;
+            });
+        });
+
+        function setQuery(query) {
+            document.getElementById('queryInput').value = query;
+        }
+
+        function clearResults() {
+            document.getElementById('resultsContainer').classList.remove('active');
+            document.getElementById('resultsContainer').innerHTML = '';
+        }
+
+        async function analyzeIssue() {
+            const query = document.getElementById('queryInput').value.trim();
+            
+            if (!query) {
+                alert('Please describe your SAP issue or question');
+                return;
+            }
+
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.classList.add('active');
+            resultsContainer.innerHTML = '<div class="loading">Analyzing your SAP issue with AI</div>';
+
+            try {
+                const response = await fetch("https://api.anthropic.com/v1/messages", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        model: "claude-sonnet-4-20250514",
+                        max_tokens: 4000,
+                        messages: [{
+                            role: "user",
+                            content: `You are an expert SAP consultant. Analyze this SAP issue comprehensively:
+
+Module: ${selectedModule}
+Issue: ${query}
+
+Provide a detailed analysis in the following JSON structure:
+
+{
+  "summary": "Brief 2-3 sentence summary of the issue",
+  "module": "Primary SAP module affected",
+  "severity": "Critical/High/Medium/Low",
+  "root_cause": "Detailed explanation of what's causing this issue",
+  "solution": {
+    "immediate_steps": ["Step 1", "Step 2", "Step 3"],
+    "configuration": ["Config change 1", "Config change 2"],
+    "transaction_codes": ["T-Code: Description"]
+  },
+  "next_actions": {
+    "short_term": ["Action 1", "Action 2"],
+    "long_term": ["Action 1", "Action 2"]
+  },
+  "gap_analysis": {
+    "current_state": "What's currently happening",
+    "desired_state": "What should be happening",
+    "gaps": [
+      {"gap": "Gap description", "priority": "High/Medium/Low"},
+      {"gap": "Gap description", "priority": "High/Medium/Low"}
+    ]
+  },
+  "earlier_solutions": {
+    "similar_issues": ["Issue 1 resolution", "Issue 2 resolution"],
+    "best_practices": ["Practice 1", "Practice 2"]
+  },
+  "sap_notes": [
+    {"number": "123456", "title": "Note title", "relevance": "Why it's relevant"},
+    {"number": "789012", "title": "Note title", "relevance": "Why it's relevant"}
+  ],
+  "related_modules": ["Module 1", "Module 2"],
+  "prevention": ["How to prevent this in future"]
+}
+
+Return ONLY valid JSON, no other text.`
+                        }]
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!data.content || !data.content[0]) {
+                    throw new Error('Invalid response from AI');
+                }
+
+                let analysisText = data.content[0].text;
+                
+                // Clean JSON from markdown code blocks if present
+                analysisText = analysisText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+                
+                const analysis = JSON.parse(analysisText);
+                displayResults(analysis);
+
+            } catch (error) {
+                console.error('Error:', error);
+                resultsContainer.innerHTML = `
+                    <div class="analysis-card">
+                        <div class="section-title">Error</div>
+                        <div class="content-block">
+                            <p style="color: #ff0064;">Failed to analyze issue: ${error.message}</p>
+                            <p style="margin-top: 10px;">Please try again or rephrase your question.</p>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function displayResults(analysis) {
+            const container = document.getElementById('resultsContainer');
+            
+            // SAP Notes section
+            let sapNotesHTML = '';
+            if (analysis.sap_notes && analysis.sap_notes.length > 0) {
+                sapNotesHTML = analysis.sap_notes.map(note => `
+                    <div style="margin-bottom: 15px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 5px;">
+                        <span class="note-number">📋 ${note.number}</span>
+                        <strong style="color: #ffff00;">${note.title}</strong>
+                        <p style="margin-top: 8px; color: #e0e0e0; opacity: 0.8;">${note.relevance}</p>
+                    </div>
+                `).join('');
+            } else {
+                sapNotesHTML = '<p style="opacity: 0.6;">No specific SAP notes identified. Check SAP Support Portal for related notes.</p>';
+            }
+
+            // Gap Analysis section
+            let gapsHTML = '';
+            if (analysis.gap_analysis && analysis.gap_analysis.gaps) {
+                gapsHTML = analysis.gap_analysis.gaps.map(gap => {
+                    const priorityClass = gap.priority.toLowerCase();
+                    return `
+                        <div style="margin-bottom: 12px;">
+                            <span class="gap-indicator ${priorityClass}"></span>
+                            <strong style="color: #00ffff;">${gap.gap}</strong>
+                            <span class="tag ${priorityClass === 'high' ? 'critical' : ''}" style="margin-left: 10px;">${gap.priority} Priority</span>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const html = `
+                <div class="analysis-card">
+                    <div style="margin-bottom: 20px;">
+                        <span class="tag">${analysis.module}</span>
+                        <span class="tag ${analysis.severity === 'Critical' ? 'critical' : ''}">${analysis.severity}</span>
+                        ${analysis.related_modules ? analysis.related_modules.map(m => `<span class="tag">${m}</span>`).join('') : ''}
+                    </div>
+                    
+                    <div class="content-block">
+                        <h4>📊 Issue Summary</h4>
+                        <p>${analysis.summary}</p>
+                    </div>
+
+                    <div class="content-block">
+                        <h4>🔍 Root Cause Analysis</h4>
+                        <p>${analysis.root_cause}</p>
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="section-title">Solution & Implementation</div>
+                    
+                    <div class="content-block">
+                        <h4>⚡ Immediate Steps</h4>
+                        <div class="timeline">
+                            ${analysis.solution.immediate_steps.map((step, i) => `
+                                <div class="timeline-item">
+                                    <strong style="color: #00ffff;">Step ${i + 1}:</strong> ${step}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="content-block">
+                        <h4>⚙️ Configuration Changes</h4>
+                        <ul>
+                            ${analysis.solution.configuration.map(config => `<li>${config}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="content-block">
+                        <h4>💻 Transaction Codes</h4>
+                        <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                            ${analysis.solution.transaction_codes.map(tc => `
+                                <div style="padding: 10px 15px; background: rgba(0,255,255,0.1); border: 1px solid rgba(0,255,255,0.3); border-radius: 5px; font-family: 'Orbitron', sans-serif;">
+                                    ${tc}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="section-title">Next Actions & Roadmap</div>
+                    
+                    <div class="content-block">
+                        <h4>🎯 Short-term Actions</h4>
+                        <ul>
+                            ${analysis.next_actions.short_term.map(action => `<li>${action}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="content-block">
+                        <h4>🚀 Long-term Actions</h4>
+                        <ul>
+                            ${analysis.next_actions.long_term.map(action => `<li>${action}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="section-title">Gap Analysis</div>
+                    
+                    <div class="content-block">
+                        <h4>📍 Current State</h4>
+                        <p>${analysis.gap_analysis.current_state}</p>
+                    </div>
+
+                    <div class="content-block">
+                        <h4>🎯 Desired State</h4>
+                        <p>${analysis.gap_analysis.desired_state}</p>
+                    </div>
+
+                    <div class="content-block">
+                        <h4>⚠️ Identified Gaps</h4>
+                        ${gapsHTML}
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="section-title">Earlier Solutions & Best Practices</div>
+                    
+                    <div class="content-block">
+                        <h4>📚 Similar Issues Resolved</h4>
+                        <ul>
+                            ${analysis.earlier_solutions.similar_issues.map(issue => `<li>${issue}</li>`).join('')}
+                        </ul>
+                    </div>
+
+                    <div class="content-block">
+                        <h4>✨ Best Practices</h4>
+                        <ul>
+                            ${analysis.earlier_solutions.best_practices.map(practice => `<li>${practice}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="section-title">SAP Notes & Documentation</div>
+                    <div class="content-block">
+                        ${sapNotesHTML}
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="section-title">Prevention Strategy</div>
+                    <div class="content-block">
+                        <ul>
+                            ${analysis.prevention.map(prev => `<li>${prev}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // Allow Enter key (with Shift for new line)
+        document.getElementById('queryInput').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                analyzeIssue();
+            }
+        });
+    </script>
+</body>
+</html>
